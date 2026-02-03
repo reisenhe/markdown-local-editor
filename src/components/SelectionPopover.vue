@@ -35,8 +35,11 @@
 <script setup lang="ts">
 import { ref, watch, nextTick } from 'vue'
 
+import type { Editor } from '@tiptap/core'
+
 const props = defineProps<{
   editorElement?: HTMLElement | null
+  editor?: Editor
 }>()
 
 const visible = ref(false)
@@ -109,6 +112,15 @@ const handleMouseUp = (e: MouseEvent) => {
       }
     }
 
+    // 打印 TipTap 编辑器的选区信息（如果可用）
+    if (props.editor) {
+      console.log('TipTap 选区信息:', {
+        anchor: props.editor.state.selection.anchor,
+        head: props.editor.state.selection.head,
+        empty: props.editor.state.selection.empty,
+      })
+    }
+
     // 保存选中的文本
     selectedText.value = text
 
@@ -143,6 +155,12 @@ const handleSubmit = () => {
 
   console.log('用户输入:', userInput.value)
   console.log('选中文本:', selectedText.value)
+
+  // 使用 TipTap 编辑器的 API 替换选中的内容
+  if (props.editor) {
+    console.log('使用 TipTap 编辑器 API 替换内容')
+    props.editor.commands.insertContent(userInput.value)
+  }
 
   // 重置状态
   userInput.value = ''

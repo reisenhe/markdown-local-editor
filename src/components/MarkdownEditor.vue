@@ -50,7 +50,7 @@
     </div>
     <div ref="editorContainer" class="p-6">
       <EditorContent :editor="editor" />
-      <SelectionPopover :editor-element="editorElement" />
+      <SelectionPopover :editor-element="editorElement" :editor="editor" />
     </div>
   </div>
 </template>
