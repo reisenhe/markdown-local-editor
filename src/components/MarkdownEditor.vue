@@ -48,32 +48,39 @@
         </div>
       </div>
     </div>
-    <div class="p-6">
+    <div ref="editorContainer" class="p-6">
       <EditorContent :editor="editor" />
+      <SelectionPopover :editor-element="editorElement" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted } from 'vue'
 import { useEditor, EditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 import markdownit from 'markdown-it'
+import SelectionPopover from './SelectionPopover.vue'
 
 // 初始化markdown-it实例
 const md = new markdownit()
+
+// 编辑器容器引用
+const editorContainer = ref<HTMLElement>()
+const editorElement = ref<HTMLElement | null>(null)
 
 // 原始输入内容（可能来自LLM输出）
 const rawInput = `# Markdown 局部编辑工具
 
 ## 背景与目标
 
-在长文写作或技术文档场景中，用户经常希望对已有 Markdown 文档中的某一小段内容进行精细修改，而不是让 LLM 重写整篇文档。
+在长文写作或技术文档场景中，用户经常希望对已有 Markdown 文档中的某一小段内容进行精细修改,而不是让 LLM 重写整篇文档。
 
 ## 核心功能
 
 - 支持对文档中的某一段/某一句进行选中
 - 用户用自然语言描述"如何修改这部分"
-- LLM 只对这部分进行修改，并保持其余内容与格式不变
+- LLM 只对这部分进行修改,并保持其余内容与格式不变
 - 所有 AI 操作均有可追溯的对话记录
 
 ## 使用方法
@@ -90,6 +97,14 @@ const parsedContent = md.render(rawInput)
 const editor = useEditor({
   extensions: [StarterKit],
   content: parsedContent,
+})
+
+// 获取编辑器的 DOM 元素
+onMounted(() => {
+  if (editorContainer.value) {
+    // 查找 .tiptap 编辑器元素
+    editorElement.value = editorContainer.value.querySelector('.tiptap')
+  }
 })
 </script>
 
