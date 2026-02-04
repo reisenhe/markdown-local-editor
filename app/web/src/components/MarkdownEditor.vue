@@ -69,34 +69,19 @@ const md = new markdownit()
 const editorContainer = ref<HTMLElement>()
 const editorElement = ref<HTMLElement | null>(null)
 
-// 原始输入内容（可能来自LLM输出）
-const rawInput = `# Markdown 局部编辑工具
-
-## 背景与目标
-
-在长文写作或技术文档场景中，用户经常希望对已有 Markdown 文档中的某一小段内容进行精细修改,而不是让 LLM 重写整篇文档。
-
-## 核心功能
-
-- 支持对文档中的某一段/某一句进行选中
-- 用户用自然语言描述"如何修改这部分"
-- LLM 只对这部分进行修改,并保持其余内容与格式不变
-- 所有 AI 操作均有可追溯的对话记录
-
-## 使用方法
-
-1. 在文档中选中要修改的内容
-2. 在弹出的输入框中描述修改要求
-3. 等待 AI 生成修改结果
-4. 查看修改历史和版本记录
-`
-
-// 使用markdown-it解析原始输入
-const parsedContent = md.render(rawInput)
-
 const editor = useEditor({
   extensions: [StarterKit],
-  content: parsedContent,
+})
+
+const updateContent = (newContent: string) => {
+  if (editor.value) {
+    const blockContent = md.render(newContent)
+    editor.value.commands.setContent(blockContent)
+  }
+}
+
+defineExpose({
+  updateContent,
 })
 
 // 获取编辑器的 DOM 元素
